@@ -190,12 +190,13 @@ export default function AnalyticsScreen() {
   const change = ((last - first) / first) * 100;
   const isUp = change >= 0;
   const c = useColors();
+  const shimmer = useRef(new Animated.Value(0)).current;
 
   const headerAnim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     Animated.timing(headerAnim, { toValue: 1, duration: 400, useNativeDriver: true }).start();
   }, []);
-
+  const shimmerOpacity = shimmer.interpolate({ inputRange: [0, 1], outputRange: [0.03, 0.10] });
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: c.background }]} edges={['top']}>
       <StatusBar barStyle="light-content" />
@@ -212,6 +213,7 @@ export default function AnalyticsScreen() {
 
         {/* ── Chart Card ── */}
         <View style={styles.card}>
+          <Animated.View style={[styles.shimmerOverlay, { opacity: shimmerOpacity }]} />
           <View style={styles.chartTopRow}>
             <View>
               <Text style={styles.chartValue}>
@@ -335,17 +337,21 @@ const styles = StyleSheet.create({
   headerSub: { color: '#333', fontSize: 11, fontFamily: 'Courier' },
 
   card: {
-    backgroundColor: '#0D0D0D',
+    backgroundColor: '#FAFAFA',
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#141414',
+    borderColor: '#E8E8E8',
     marginBottom: 24,
   },
+  shimmerOverlay: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: '#00FF87',
+  },
   chartTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 },
-  chartValue: { color: '#F5F5F5', fontSize: 28, fontWeight: '700', fontFamily: 'Courier', letterSpacing: -0.5 },
+  chartValue: { color: '#253357', fontSize: 28, fontWeight: '700', fontFamily: 'Courier', letterSpacing: -0.5 },
   changeRow: { flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 2 },
-  changeText: { fontSize: 11, fontFamily: 'Courier', fontWeight: '600' },
+  changeText: { fontSize: 12, fontFamily: 'Courier', fontWeight: '600' },
   chartLabel: { color: '#333', fontSize: 9, fontFamily: 'Courier', width: 36, textAlign: 'right' },
 
   periodRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 },
@@ -386,15 +392,15 @@ const styles = StyleSheet.create({
   statsRow: { flexDirection: 'row', gap: 8 },
   statCard: {
     flex: 1,
-    backgroundColor: '#0D0D0D',
+    backgroundColor: '#FAFAFA',
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#141414',
+    borderColor: '#D0D0D0',
     padding: 12,
     alignItems: 'center',
     gap: 2,
   },
   statLabel: { color: '#444', fontSize: 9, letterSpacing: 2, fontFamily: 'Courier' },
-  statValue: { color: '#F5F5F5', fontSize: 16, fontWeight: '700', fontFamily: 'Courier' },
+  statValue: { color: '#253357', fontSize: 16, fontWeight: '700', fontFamily: 'Courier' },
   statNote: { color: '#333', fontSize: 8, fontFamily: 'Courier', letterSpacing: 1 },
 });

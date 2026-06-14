@@ -552,7 +552,7 @@ const styles = StyleSheet.create({
   greetingSubText: { color: '#383838', fontSize: 10, fontFamily: 'Courier' },
   bellBtn: {
     width: 40, height: 40, borderRadius: 12,
-    backgroundColor: '#FBFEFB', borderWidth: 1, borderColor: '#181818',
+    backgroundColor: '#E8E8E8', borderWidth: 1, borderColor: '#D0D0D0',
     justifyContent: 'center', alignItems: 'center',
   },
   bellDot: {
@@ -588,7 +588,7 @@ const styles = StyleSheet.create({
     borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4,
     borderWidth: 1, marginBottom: 4, marginLeft: 6,
   },
-  gainTagText: { fontSize: 11, fontWeight: '700', fontFamily: 'Courier' },
+  gainTagText: { fontSize: 16, fontWeight: '700', fontFamily: 'Courier' },
   balanceSub: { fontSize: 11, fontFamily: 'Courier', marginTop: 4, marginBottom: 16 },
   allocRow: { flexDirection: 'row', gap: 10, marginBottom: 10 },
   allocPill: { flexDirection: 'row', alignItems: 'center', gap: 4 },
@@ -695,7 +695,7 @@ const styles = StyleSheet.create({
   },
   qBadge: {
     width: 52, height: 30, borderRadius: 6, borderWidth: 1,
-    justifyContent: 'center', alignItems: 'center', backgroundColor: '#090909',
+    justifyContent: 'center', alignItems: 'center', backgroundColor: '#FBFEFB',
   },
   qTicker: { fontSize: 9, fontWeight: '900', fontFamily: 'Courier', letterSpacing: 0.4 },
   qMeta: { flex: 1, gap: 2 },
