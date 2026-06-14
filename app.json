@@ -36,7 +36,14 @@
         }
       ],
       "expo-secure-store",
-      "expo-image"
+      "expo-image",
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Marked needs camera access so you can take a photo of your ID.",
+          "photosPermission": "Marked needs photo library access so you can upload your ID."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

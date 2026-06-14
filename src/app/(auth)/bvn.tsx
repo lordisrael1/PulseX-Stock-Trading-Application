@@ -92,7 +92,7 @@ function StepBar({ active, done }: { active: number; done: number[] }) {
         const isActive = s.id === active;
         return (
           <View key={s.id} style={styles.stepNodeWrap}>
-            {i > 0 && (
+            {i < STEPS.length - 1 && (
               <View
                 style={[
                   styles.stepLine,
@@ -295,7 +295,7 @@ export default function BVNVerificationScreen() {
     // ── TODO: navigate to next KYC step ───────────────────────────
     // router.push('/(auth)/kyc/id-upload');
     // ─────────────────────────────────────────────────────────────
-    router.push('/(auth)/kyc/id-upload' as any);
+    router.push('/(auth)/id-upload');
   };
 
   const activeStep = flow === 'success' ? 2 : 1;
@@ -702,18 +702,20 @@ const styles = StyleSheet.create({
     marginBottom: 28,
   },
   stepNodeWrap: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     flex: 1,
+    position: 'relative',
   },
   stepLine: {
+    position: 'absolute',
+    left: '50%',
+    right: '-50%',
+    top: 14,
     height: 1.5,
-    flex: 1,
     backgroundColor: '#E8E8E8',
-    marginTop: 14,
   },
   stepLineDone: { backgroundColor: '#0F2419' },
-  stepNode: { alignItems: 'center', gap: 5 },
+  stepNode: { alignItems: 'center', gap: 5, zIndex: 1 },
   stepDot: {
     width: 28, height: 28, borderRadius: 14,
     borderWidth: 1.5, borderColor: '#E0E0E0',
