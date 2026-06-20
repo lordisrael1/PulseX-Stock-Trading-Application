@@ -198,7 +198,7 @@ export default function AnalyticsScreen() {
   }, []);
   const shimmerOpacity = shimmer.interpolate({ inputRange: [0, 1], outputRange: [0.03, 0.10] });
   return (
-    <SafeAreaView style={[styles.root, { backgroundColor: c.background }]} edges={['top']}>
+    <SafeAreaView style={styles.root} edges={['top']}>
       <StatusBar barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
@@ -328,11 +328,11 @@ export default function AnalyticsScreen() {
 // ─── Styles ────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
+  root: { flex: 1, backgroundColor: '#F7F7F7' },
   scroll: { paddingHorizontal: 20 },
 
   header: { paddingTop: 20, paddingBottom: 16 },
-  screenLabel: { color: '#444', fontSize: 10, letterSpacing: 3, fontFamily: 'Courier', marginBottom: 4 },
+  screenLabel: { fontFamily: 'Courier', fontSize: 10, fontWeight: '700', color: '#AAAAAA', letterSpacing: 1.3, marginBottom: 8 },
   headerRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   headerSub: { color: '#333', fontSize: 11, fontFamily: 'Courier' },
 

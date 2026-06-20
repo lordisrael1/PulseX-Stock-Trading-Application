@@ -866,12 +866,12 @@ export default function MarketScreen() {
 const STAT_W = (width - 56) / 3;
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#FFF' },
+  root: { flex: 1, backgroundColor: '#F7F7F7' },
 
   // Header
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 10, gap: 10 },
-  headerBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: '#FFF', borderWidth: 1, borderColor: '#1A1A1A', justifyContent: 'center', alignItems: 'center' },
-  exTabs: { flex: 1, flexDirection: 'row', backgroundColor: '#FFF', borderRadius: 10, borderWidth: 1, borderColor: '#1A1A1A', overflow: 'hidden' },
+  headerBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: '#FFF', borderWidth: 1, borderColor: '#0A84FF22', justifyContent: 'center', alignItems: 'center' },
+  exTabs: { flex: 1, flexDirection: 'row', backgroundColor: '#FFF', borderRadius: 10, borderWidth: 1, borderColor: '#0A84FF22', overflow: 'hidden' },
   exTab: { flex: 1, paddingVertical: 9, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 5 },
   exTabActive: { backgroundColor: '#161616' },
   exTabTxt: { color: '#3A3A3A', fontSize: 11, fontFamily: 'Courier', fontWeight: '800', letterSpacing: 1 },
@@ -922,13 +922,13 @@ const styles = StyleSheet.create({
   relatedSub: { fontSize: 9, color: '#666', fontFamily: 'Courier' },
 
   // Modal sheet
-  overlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.65)' },
-  sheet: { backgroundColor: '#0A0A0A', borderTopLeftRadius: 26, borderTopRightRadius: 26, borderWidth: 1, borderColor: '#1C1C1C', maxHeight: height * 0.92, minHeight: height * 0.8, paddingTop: 10 },
+  overlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: "#F7F7F7"},
+  sheet: { backgroundColor: '#F7F7F7', borderTopLeftRadius: 26, borderTopRightRadius: 26, borderWidth: 1, borderColor: '#090a0922', maxHeight: height * 0.92, minHeight: height * 0.8, paddingTop: 10 },
   sheetHandle: { width: 38, height: 4, borderRadius: 2, backgroundColor: '#252525', alignSelf: 'center', marginBottom: 14 },
   sheetHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, marginBottom: 12 },
   sheetTicker: { fontSize: 20, fontWeight: '900', fontFamily: 'Courier', letterSpacing: 0.8 },
   sheetName: { color: '#484848', fontSize: 11, fontFamily: 'Courier', marginTop: 1, maxWidth: width * 0.55 },
-  sheetCloseBtn: { width: 30, height: 30, borderRadius: 9, backgroundColor: '#141414', borderWidth: 1, borderColor: '#1F1F1F', justifyContent: 'center', alignItems: 'center' },
+  sheetCloseBtn: { width: 30, height: 30, borderRadius: 9, backgroundColor: '#FFF', borderWidth: 1, borderColor: '#00FF8722', justifyContent: 'center', alignItems: 'center' },
   companyIcon: { width: 36, height: 36, borderRadius: 8 },
   companyIconFallback: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#111', borderWidth: 1, justifyContent: 'center', alignItems: 'center' },
   companyIconLetter: { fontSize: 16, fontWeight: '900', fontFamily: 'Courier' },
@@ -938,11 +938,11 @@ const styles = StyleSheet.create({
 
   // Price block
   priceBlock: { paddingHorizontal: 20, marginBottom: 14 },
-  priceMain: { color: '#F2F2F2', fontSize: 32, fontWeight: '800', fontFamily: 'Courier', letterSpacing: -0.5 },
+  priceMain: { color: '#253357', fontSize: 32, fontWeight: '800', fontFamily: 'Courier', letterSpacing: -0.5 },
   priceChangeRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 },
   pricePct: { fontSize: 13, fontWeight: '700', fontFamily: 'Courier' },
   priceAbs: { fontSize: 11, fontFamily: 'Courier' },
-  mktCap: { color: '#343434', fontSize: 10, fontFamily: 'Courier', marginTop: 5 },
+  mktCap: { color: '#253357', fontSize: 10, fontFamily: 'Courier', marginTop: 5 },
 
   // Period
   periodRow: { flexDirection: 'row', justifyContent: 'space-around', paddingHorizontal: 20, marginBottom: 14 },
@@ -956,8 +956,8 @@ const styles = StyleSheet.create({
 
   // Stats
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 14, gap: 4, marginBottom: 14 },
-  statCell: { width: STAT_W, backgroundColor: '#101010', borderRadius: 8, borderWidth: 1, borderColor: '#181818', padding: 10, alignItems: 'center', gap: 3 },
-  statCellLbl: { color: '#2C2C2C', fontSize: 8, fontFamily: 'Courier', letterSpacing: 1 },
+  statCell: { width: STAT_W, backgroundColor: '#FFF', borderRadius: 8, borderWidth: 1, borderColor: '#00FF8722', padding: 10, alignItems: 'center', gap: 3 },
+  statCellLbl: { color: '#253357', fontSize: 8, fontFamily: 'Courier', letterSpacing: 1 },
   statCellVal: { color: '#C0C0C0', fontSize: 11, fontWeight: '700', fontFamily: 'Courier' },
 
   sectionPad: { paddingHorizontal: 20, marginBottom: 16 },
@@ -979,14 +979,14 @@ const styles = StyleSheet.create({
   rsiScaleTxt: { color: '#282828', fontSize: 8, fontFamily: 'Courier' },
 
   // Description
-  descCard: { marginHorizontal: 20, marginBottom: 14, backgroundColor: '#0D0D0D', borderRadius: 10, borderWidth: 1, borderColor: '#181818', padding: 14, gap: 8 },
+  descCard: { marginHorizontal: 20, marginBottom: 14, backgroundColor: '#FFF', borderRadius: 10, borderWidth: 1, borderColor: '#00FF8722', padding: 14, gap: 8 },
   descLabel: { color: '#2A2A2A', fontSize: 8, fontFamily: 'Courier', letterSpacing: 2 },
   descText: { color: '#606060', fontSize: 11, fontFamily: 'Courier', lineHeight: 17 },
   descLink: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   descLinkTxt: { color: '#0A84FF', fontSize: 10, fontFamily: 'Courier' },
 
   // News
-  newsCard: { backgroundColor: '#0D0D0D', borderRadius: 10, borderWidth: 1, borderColor: '#181818', padding: 12, marginBottom: 8, gap: 6 },
+  newsCard: { backgroundColor: '#FFF', borderRadius: 10, borderWidth: 1, borderColor: '#00FF8722', padding: 12, marginBottom: 8, gap: 6 },
   newsTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   newsSource: { color: '#333', fontSize: 9, fontFamily: 'Courier', letterSpacing: 1 },
   newsTimeRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },

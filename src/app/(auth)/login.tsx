@@ -130,19 +130,21 @@
 import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import {
-    ActivityIndicator,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useBiometricAuth } from '@/hooks/useBiometricAuth';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { storage } from "../../lib/storage";
@@ -206,18 +208,24 @@ function AppIcon() {
 export default function LoginScreen() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const {
+    authenticate,
+    isEnabled,
+    biometricType,
+    loading: bioLoading,
+  } = useBiometricAuth();
 
   // Pre-seeded for dev — clear in production
-  const [email,    setEmail]    = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPwd,  setShowPwd]  = useState(false);
-  const [loading,  setLoading]  = useState(false);
-  const [error,    setError]    = useState('');
+  const [showPwd, setShowPwd] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const pwdRef = useRef<TextInput>(null);
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const canSubmit  = emailValid && password.length >= 6 && !loading;
+  const canSubmit = emailValid && password.length >= 6 && !loading;
 
   const handleSignIn = async () => {
     if (!canSubmit) return;
@@ -229,25 +237,25 @@ export default function LoginScreen() {
       // ─────────────────────────────────────────────────────────────
       await new Promise(r => setTimeout(r, 1200)); // mock
       const response = {
-                token: "abc123",
-                user: {
-                    id: "1",
-                    email,
-                    password,
-                    fullName: "Israel Joseph",
-                },
-            };
+        token: "abc123",
+        user: {
+          id: "1",
+          email,
+          password,
+          fullName: "Israel Joseph",
+        },
+      };
       await storage.set(
-                "accessToken",
-                response.token
-            );
+        "accessToken",
+        response.token
+      );
 
-            dispatch(
-                setCredentials({
-                    user: response.user,
-                    token: response.token,
-                })
-            );
+      dispatch(
+        setCredentials({
+          user: response.user,
+          token: response.token,
+        })
+      );
       router.replace('/(protected)/(tabs)');
     } catch (e: any) {
       setError(e?.message ?? 'Sign in failed. Check your credentials.');
@@ -268,11 +276,71 @@ export default function LoginScreen() {
     // ──────────────────────────────────────────────────────────────
   };
 
+  // const handleBio = async () => {
+  //   // ── TODO: replace with expo-local-authentication ───────────────
+  //   // const result = await LocalAuthentication.authenticateAsync();
+  //   // if (result.success) router.replace('/(protected)/(tabs)');
+  //   // ──────────────────────────────────────────────────────────────
+  // };
+
   const handleBio = async () => {
-    // ── TODO: replace with expo-local-authentication ───────────────
-    // const result = await LocalAuthentication.authenticateAsync();
-    // if (result.success) router.replace('/(protected)/(tabs)');
-    // ──────────────────────────────────────────────────────────────
+
+    if (!isEnabled) {
+      Alert.alert(
+        "Biometric not enabled",
+        "Enable biometric login from your profile settings first."
+      );
+      return;
+    }
+
+
+    const success = await authenticate(
+      `Use ${biometricType} to sign in`
+    );
+
+
+    if (!success) return;
+
+
+    try {
+
+      const token = await storage.getString("accessToken");
+
+
+      if (!token) {
+        Alert.alert(
+          "Session expired",
+          "Please login with your password first."
+        );
+        return;
+      }
+
+
+      // normally decode user from token
+      // or call /me endpoint
+
+      const user = {
+        id: "1",
+        email: "saved@email.com",
+        fullName: "Israel Joseph",
+      };
+
+
+      dispatch(
+        setCredentials({
+          user,
+          token,
+        })
+      );
+
+
+      router.replace('/(protected)/(tabs)');
+
+
+    } catch (e) {
+      console.log(e);
+    }
+
   };
 
   return (
@@ -424,7 +492,11 @@ export default function LoginScreen() {
               <Path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z" stroke="#CCCCCC" strokeWidth={1.5} fill="none" />
               <Circle cx={12} cy={12} r={2} fill="#CCCCCC" />
             </Svg>
-            <Text style={styles.bioTxt}>Use biometrics to sign in faster</Text>
+            <Text style={styles.bioTxt}>
+              {isEnabled
+                ? `Use ${biometricType} to sign in`
+                : 'Enable biometrics in profile'}
+            </Text>
           </TouchableOpacity>
 
         </ScrollView>
@@ -434,30 +506,30 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  root:   { flex: 1, backgroundColor: '#fff' },
+  root: { flex: 1, backgroundColor: '#fff' },
   scroll: { paddingHorizontal: 24, paddingBottom: 40 },
-  top:    { alignItems: 'center', paddingTop: 40, marginBottom: 32 },
+  top: { alignItems: 'center', paddingTop: 40, marginBottom: 32 },
   appIconWrap: {
     width: 64, height: 64, borderRadius: 18,
     backgroundColor: '#0F2419',
     alignItems: 'center', justifyContent: 'center', marginBottom: 18,
   },
   title: { fontSize: 22, fontWeight: '800', color: '#0A0A0A', letterSpacing: -0.4, marginBottom: 6 },
-  sub:   { fontSize: 13, color: '#AAAAAA' },
+  sub: { fontSize: 13, color: '#AAAAAA' },
   fieldWrap: { marginBottom: 14 },
-  fieldLbl:  { fontSize: 10, fontWeight: '700', color: '#AAAAAA', letterSpacing: 1.3, marginBottom: 7 },
+  fieldLbl: { fontSize: 10, fontWeight: '700', color: '#AAAAAA', letterSpacing: 1.3, marginBottom: 7 },
   field: {
     flexDirection: 'row', alignItems: 'center',
     borderWidth: 1, borderColor: '#E8E8E8', borderRadius: 12,
     backgroundColor: '#FAFAFA', paddingHorizontal: 13,
     minHeight: 50, gap: 10,
   },
-  fieldValid:  { borderColor: '#22C55E', backgroundColor: '#F9FFF9' },
-  fieldIcon:   { flexShrink: 0 },
-  fieldInput:  { flex: 1, fontSize: 14, color: '#0A0A0A', padding: 0 },
-  errorTxt:    { fontSize: 12, color: '#DC2626', marginBottom: 6, marginLeft: 2 },
-  forgotRow:   { alignItems: 'flex-end', marginBottom: 18 },
-  forgotTxt:   { fontSize: 13, fontWeight: '700', color: '#0F2419' },
+  fieldValid: { borderColor: '#22C55E', backgroundColor: '#F9FFF9' },
+  fieldIcon: { flexShrink: 0 },
+  fieldInput: { flex: 1, fontSize: 14, color: '#0A0A0A', padding: 0 },
+  errorTxt: { fontSize: 12, color: '#DC2626', marginBottom: 6, marginLeft: 2 },
+  forgotRow: { alignItems: 'flex-end', marginBottom: 18 },
+  forgotTxt: { fontSize: 13, fontWeight: '700', color: '#0F2419' },
   cta: {
     backgroundColor: '#0F2419', borderRadius: 14,
     paddingVertical: 16, alignItems: 'center', marginBottom: 20,
@@ -466,7 +538,7 @@ const styles = StyleSheet.create({
   ctaTxt: { fontSize: 15, fontWeight: '800', color: '#fff' },
   divRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 16 },
   divLine: { flex: 1, height: 1, backgroundColor: '#F0F0F0' },
-  divTxt:  { fontSize: 12, color: '#CCCCCC' },
+  divTxt: { fontSize: 12, color: '#CCCCCC' },
   socialRow: { flexDirection: 'row', gap: 10, marginBottom: 20 },
   socialBtn: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
@@ -475,7 +547,7 @@ const styles = StyleSheet.create({
   },
   socialTxt: { fontSize: 14, fontWeight: '600', color: '#0A0A0A' },
   signupRow: { flexDirection: 'row', justifyContent: 'center', marginBottom: 20 },
-  signupTxt:  { fontSize: 13, color: '#AAAAAA' },
+  signupTxt: { fontSize: 13, color: '#AAAAAA' },
   signupLink: { fontSize: 13, fontWeight: '800', color: '#0F2419' },
   bioRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 },
   bioTxt: { fontSize: 12, color: '#CCCCCC' },

@@ -405,7 +405,7 @@ export default function HomeScreen() {
   const onRefresh = () => { setRefreshing(true); load(); };
 
   return (
-    <SafeAreaView style= {[styles.root, { backgroundColor: c.background }]} edges={['top']}>
+    <SafeAreaView style= {styles.root} edges={['top']}>
       <StatusBar barStyle="light-content" />
       <ScrollView
         contentContainerStyle={styles.scroll}
@@ -536,7 +536,7 @@ export default function HomeScreen() {
 // ─── Styles ────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  root: { flex: 1},
+  root: { flex: 1, backgroundColor: '#F7F7F7' },
   scroll: { paddingHorizontal: 18 },
 
   // Top bar

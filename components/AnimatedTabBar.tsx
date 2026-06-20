@@ -1,20 +1,20 @@
+import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { BarChart2, BriefcaseBusiness, Home, User, Wallet } from 'lucide-react-native';
 import React, { useEffect, useRef } from 'react';
 import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
   Animated,
   Dimensions,
   Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Home, BriefcaseBusiness, BarChart2, User } from 'lucide-react-native';
  
 const { width } = Dimensions.get('window');
  
-const ICONS = [Home, BriefcaseBusiness, BarChart2, User];
-const TAB_COUNT = 4;
+const ICONS = [Home, BriefcaseBusiness, Wallet, BarChart2, User];
+const TAB_COUNT = 5;
  
 type TabItemProps = {
   icon: React.ElementType;

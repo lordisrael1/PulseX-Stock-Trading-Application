@@ -199,7 +199,7 @@ export default function PortfolioScreen() {
   const isUp = TOTAL_GAIN >= 0;
 
   return (
-    <SafeAreaView style={[styles.root, { backgroundColor: c.background }]} edges={['top']}>
+    <SafeAreaView style={styles.root } edges={['top']}>
       <StatusBar barStyle="light-content" />
       <ScrollView
         contentContainerStyle={styles.scroll}
@@ -293,18 +293,12 @@ export default function PortfolioScreen() {
 
 const styles = StyleSheet.create({
   // use a fixed background color to avoid referencing theme hook outside component
-  root: { flex: 1 },
+  root: { flex: 1, backgroundColor: '#F7F7F7' },
   scroll: { paddingHorizontal: 20 },
 
   header: { paddingTop: 20, paddingBottom: 12 },
   headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  screenLabel: {
-    color: '#444',
-    fontSize: 10,
-    letterSpacing: 3,
-    fontFamily: 'Courier',
-    marginBottom: 4,
-  },
+  screenLabel: { fontFamily: 'Courier', fontSize: 10, fontWeight: '700', color: '#AAAAAA', letterSpacing: 1.3, marginBottom: 8 },
   totalValue: {
     color: '#253357',
     fontSize: 36,

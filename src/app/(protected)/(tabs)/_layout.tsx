@@ -11,6 +11,7 @@ export default function TabLayout() {
     >
       <Tabs.Screen name="index" />
       <Tabs.Screen name="portfolio" />
+      <Tabs.Screen name="wallet" />
       <Tabs.Screen name="analytics" />
       <Tabs.Screen name="profile" />
     </Tabs>

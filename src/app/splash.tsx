@@ -202,7 +202,7 @@ export default function SplashScreen() {
 
       <View style={splashStyles.bottom}>
         <LoadingDots opacity={dotsOpacity} />
-        <Animated.Text style={[splashStyles.fromTxt, { opacity: dotsOpacity }]}>from Anthropic Labs</Animated.Text>
+        <Animated.Text style={[splashStyles.fromTxt, { opacity: dotsOpacity }]}>Invest Now, Secure Your future</Animated.Text>
       </View>
 
       <Animated.View style={[splashStyles.cornerBadge, { opacity: wordmarkOpacity }]}> 
