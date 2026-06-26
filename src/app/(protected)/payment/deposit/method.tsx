@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { router, useLocalSearchParams, useRouter } from 'expo-router';
 import {
     ArrowLeft,
     ArrowUpRight,
@@ -36,14 +36,14 @@ function fmtAmount(n: number) {
 const DEP_BANKS = [
     { id: 'gtb', name: 'Guaranty Trust Bank', acct: '4412', color: '#E86000', short: 'GTB' },
     { id: 'zen', name: 'Zenith Bank', acct: '8831', color: '#C1121F', short: 'ZEN' },
-    { id: 'acc', name: 'Access Bank', acct: '2207', color: '#003B6F', short: 'ACC' },
-    { id: 'kda', name: 'Kuda Bank', acct: '3341', color: '#5B30A6', short: 'KDA' },
-    { id: 'opy', name: 'OPay', acct: '9900', color: '#1A9E4A', short: 'OPY' },
+    // { id: 'acc', name: 'Access Bank', acct: '2207', color: '#003B6F', short: 'ACC' },
+    // { id: 'kda', name: 'Kuda Bank', acct: '3341', color: '#5B30A6', short: 'KDA' },
+    // { id: 'opy', name: 'OPay', acct: '9900', color: '#1A9E4A', short: 'OPY' },
 ];
 
 const CARDS = [
     { id: 'visa', brand: 'VISA', num: '•••• •••• •••• 4521', name: 'Joseph Israel', exp: '09/27', color: '#1A56A0' },
-    { id: 'mc', brand: 'MC', num: '•••• •••• •••• 8843', name: 'Joseph Israel', exp: '03/26', color: '#EB5D0E' },
+    //{ id: 'mc', brand: 'MC', num: '•••• •••• •••• 8843', name: 'Joseph Israel', exp: '03/26', color: '#EB5D0E' },
 ];
 
 function buildUssdCodes(amount: number) {
@@ -245,7 +245,7 @@ function BankSubScreen({ onContinue }: { onContinue: () => void }) {
                 ))}
 
                 {/* Add new */}
-                <TouchableOpacity style={styles.addNewRow} activeOpacity={0.7}>
+                <TouchableOpacity style={styles.addNewRow} onPress={() => router.push('/payment/deposit/addBank')} activeOpacity={0.7}>
                     <View style={styles.addNewIcon}>
                         <Plus size={16} color="#BBBBBB" />
                     </View>
@@ -463,6 +463,8 @@ export default function DepositMethodScreen() {
     };
 
     const goConfirm = () => router.push('/payment/deposit/confirm');
+    const goConfirmBank = () => router.push('/payment/deposit/confirm');
+    const goConfirmNibss = () => router.push('/payment/deposit/confirmNibss')
 
     const { title, sub } = headerMap[view];
 
@@ -472,10 +474,10 @@ export default function DepositMethodScreen() {
             <Header title={title} sub={sub} onBack={handleBack} amountFmt={amountFmt} />
 
             {view === 'grid' && <MethodGrid onPick={setView} />}
-            {view === 'bank' && <BankSubScreen onContinue={goConfirm} />}
+            {view === 'bank' && <BankSubScreen onContinue={goConfirmBank} />}
             {view === 'card' && <CardSubScreen onContinue={goConfirm} />}
-            {view === 'ussd' && <USSDSubScreen onContinue={goConfirm} amount={amount} />}
-            {view === 'transfer' && <TransferSubScreen onContinue={goConfirm} amountFmt={amountFmt} />}
+            {view === 'ussd' && <USSDSubScreen onContinue={goConfirmNibss} amount={amount} />}
+            {view === 'transfer' && <TransferSubScreen onContinue={goConfirmNibss} amountFmt={amountFmt} />}
         </SafeAreaView>
     );
 }

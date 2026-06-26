@@ -55,7 +55,7 @@ export default function DepositScreen() {
 
       {/* ── Tab Row ── */}
       <View style = {styles.tabRow}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
+        <TouchableOpacity style={styles.backBtn} onPress={() => router.push('/(protected)/(tabs)')} activeOpacity={0.7}>
           <ArrowLeft size={18} color="#555" />
         </TouchableOpacity>
       </View>

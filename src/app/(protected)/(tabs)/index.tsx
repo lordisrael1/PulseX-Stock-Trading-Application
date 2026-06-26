@@ -437,7 +437,7 @@ export default function HomeScreen() {
               <Bell size={17} color="#777" />
               <View style={styles.bellDot} />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.bellBtn}>
+            <TouchableOpacity style={styles.bellBtn} onPress={() => router.push('/profile')}>
               <View>
                 <Text style={[styles.gainTagText, { color: '#253237' }]}>JI</Text>
               </View>

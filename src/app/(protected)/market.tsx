@@ -62,10 +62,14 @@ const { width, height } = Dimensions.get('window');
 
 // ─── Ticker lists ─────────────────────────────────────────────────────────────
 
-const US_TICKERS = ['AAPL', 'MSFT'
+//const US_TICKERS = ['AAPL', 'MSFT'
   // 'AAPL','MSFT','NVDA','AMZN','GOOGL','TSLA','META','AVGO','BRK.B','JPM',
   // 'V','UNH','XOM','MA','LLY','HD','PG','MRK','COST','ABBV',
   // 'CVX','PEP','KO','ADBE','WMT','BAC','MCD','CRM','CSCO','ACN',
+//];
+
+const US_TICKERS = [
+  'AAPL', 'MSFT', 'NVDA', 'AMZN', 'GOOGL', 'TSLA', 'META', 'AVGO', 'JPM', 'V',
 ];
 
 // NGX — Massive free tier covers US stocks only.
