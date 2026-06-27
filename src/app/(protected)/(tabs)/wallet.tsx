@@ -22,6 +22,7 @@
 
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
+import { useWalletStore } from '../../../store/useWalletStore';
 import {
   Animated,
   RefreshControl,
@@ -323,8 +324,8 @@ export default function WalletScreen() {
     router.push('/(protected)/swap' as any);
   };
 
-  const ngnBal = MOCK_WALLET.ngnBalance;
-  const usdBal = MOCK_WALLET.usdBalance;
+  const ngnBal = useWalletStore((s) => s.ngnBalance);
+  const usdBal = useWalletStore((s) => s.usdBalance);
   const rate   = MOCK_WALLET.liveRate;
 
   return (

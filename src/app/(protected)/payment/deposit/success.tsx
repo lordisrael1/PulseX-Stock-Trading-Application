@@ -4,7 +4,7 @@
  * Status: Pending → resolves to Success after wallet credit.
  */
 
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
     Animated,
@@ -18,15 +18,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle, Path } from 'react-native-svg';
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface Props {
-  amount?: number;
-  reference?: string;
-  bankName?: string;
-  last4?: string;
-}
 
 function fmt(n: number): string {
   return n.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -196,13 +187,17 @@ const ir = StyleSheet.create({
 
 // ─── Main screen ──────────────────────────────────────────────────────────────
 
-export default function PaymentSuccessScreen({
-  amount = 10000,
-  reference = 'PXW-20241038-7K2M',
-  bankName = 'Guaranty Trust Bank',
-  last4 = '4412',
-}: Props) {
+export default function PaymentSuccessScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ amount?: string; bankName?: string; last4?: string }>();
+
+  const amount = Number.isFinite(Number(params.amount))
+    ? Math.max(0, parseInt(params.amount ?? '', 10))
+    : 10000;
+  const bankName = params.bankName ?? 'Guaranty Trust Bank';
+  const last4 = params.last4 ?? '6789';
+  const reference = 'PXW-20241038-7K2M';
+
   const [confirmed, setConfirmed] = useState(false);
   const slideUp = useRef(new Animated.Value(30)).current;
   const contentOpacity = useRef(new Animated.Value(0)).current;

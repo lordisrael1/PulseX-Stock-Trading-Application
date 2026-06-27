@@ -8,6 +8,7 @@ import {
     Smartphone,
 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
+import { useBankAccountStore } from '../../../../store/useBankAccountStore';
 import {
     Clipboard,
     Platform,
@@ -33,13 +34,6 @@ function fmtAmount(n: number) {
     return `₦${n.toLocaleString('en-NG')}`;
 }
 
-const DEP_BANKS = [
-    { id: 'gtb', name: 'Guaranty Trust Bank', acct: '4412', color: '#E86000', short: 'GTB' },
-    { id: 'zen', name: 'Zenith Bank', acct: '8831', color: '#C1121F', short: 'ZEN' },
-    // { id: 'acc', name: 'Access Bank', acct: '2207', color: '#003B6F', short: 'ACC' },
-    // { id: 'kda', name: 'Kuda Bank', acct: '3341', color: '#5B30A6', short: 'KDA' },
-    // { id: 'opy', name: 'OPay', acct: '9900', color: '#1A9E4A', short: 'OPY' },
-];
 
 const CARDS = [
     { id: 'visa', brand: 'VISA', num: '•••• •••• •••• 4521', name: 'Joseph Israel', exp: '09/27', color: '#1A56A0' },
@@ -216,27 +210,28 @@ function MethodGrid({ onPick }: { onPick: (m: MethodId) => void }) {
 
 // ─── Bank Account Sub-screen (112.png) ────────────────────────────────────────
 
-function BankSubScreen({ onContinue }: { onContinue: () => void }) {
-    const [sel, setSel] = useState(DEP_BANKS[0].id);
-    const selBank = DEP_BANKS.find(b => b.id === sel)!;
+function BankSubScreen({ onContinue }: { onContinue: (bankId: string) => void }) {
+    const accounts = useBankAccountStore((s) => s.accounts);
+    const [sel, setSel] = useState(accounts[0]?.id ?? '');
+    const selBank = accounts.find(b => b.id === sel);
 
     return (
         <View style={styles.body}>
             <Text style={styles.sectionLbl}>SAVED ACCOUNTS</Text>
             <View style={styles.listCard}>
-                {DEP_BANKS.map(b => (
+                {accounts.map(b => (
                     <TouchableOpacity
                         key={b.id}
                         style={styles.bankRow}
                         onPress={() => setSel(b.id)}
                         activeOpacity={0.7}
                     >
-                        <View style={[styles.bankLogo, { backgroundColor: b.color }]}>
-                            <Text style={styles.bankLogoTxt}>{b.short}</Text>
+                        <View style={[styles.bankLogo, { backgroundColor: b.bankColor }]}>
+                            <Text style={styles.bankLogoTxt}>{b.bankShort}</Text>
                         </View>
                         <View style={styles.bankInfo}>
-                            <Text style={styles.bankName}>{b.name}</Text>
-                            <Text style={styles.bankAcct}>•••• {b.acct}</Text>
+                            <Text style={styles.bankName}>{b.bankName}</Text>
+                            <Text style={styles.bankAcct}>•••• {b.accountNumber.slice(-4)}</Text>
                         </View>
                         <View style={[styles.radioOuter, sel === b.id && styles.radioOuterSel]}>
                             {sel === b.id && <View style={styles.radioInner} />}
@@ -253,8 +248,15 @@ function BankSubScreen({ onContinue }: { onContinue: () => void }) {
                 </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.cta} onPress={onContinue} activeOpacity={0.85}>
-                <Text style={styles.ctaTxt}>Use {selBank.name}</Text>
+            <TouchableOpacity
+                style={[styles.cta, !selBank && styles.ctaDisabled]}
+                onPress={() => selBank && onContinue(selBank.id)}
+                activeOpacity={0.85}
+                disabled={!selBank}
+            >
+                <Text style={[styles.ctaTxt, !selBank && styles.ctaDisabledTxt]}>
+                    {selBank ? `Use ${selBank.bankName}` : 'Select an account'}
+                </Text>
             </TouchableOpacity>
         </View>
     );
@@ -463,7 +465,9 @@ export default function DepositMethodScreen() {
     };
 
     const goConfirmCard = () => router.push('/payment/deposit/confirmCard');
-    const goConfirmBank = () => router.push('/payment/deposit/confirm');
+    const goConfirmBank = (bankId: string) => {
+        router.push({ pathname: '/payment/deposit/confirm', params: { amount: String(amount), bankId } });
+    };
     const goConfirmNibss = () => router.push('/payment/deposit/confirmNibss')
 
     const { title, sub } = headerMap[view];
@@ -902,6 +906,12 @@ const styles = StyleSheet.create({
         paddingVertical: 16,
         alignItems: 'center',
         marginTop: 4,
+    },
+    ctaDisabled: {
+        backgroundColor: '#E8E8E8',
+    },
+    ctaDisabledTxt: {
+        color: '#BBBBBB',
     },
     ctaTxt: {
         fontSize: 15,

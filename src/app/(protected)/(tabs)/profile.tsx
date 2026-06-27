@@ -36,6 +36,8 @@ import Svg, { Circle, Path } from 'react-native-svg';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { storage } from '../../../lib/storage';
 import { logout } from '../../../store/slices/authSlice';
+import { clearBankAccountStorage } from '../../../store/useBankAccountStore';
+import { clearWalletStorage } from '../../../store/useWalletStore';
 
 const { width } = Dimensions.get('window');
 
@@ -601,6 +603,8 @@ export default function ProfileScreen() {
     try {
       dispatch(logout());
       await storage.delete('accessToken');
+      await clearBankAccountStorage();
+      await clearWalletStorage();
       await new Promise(r => setTimeout(r, 600));
       setShowSignOut(false);
       router.replace('/(auth)/login');

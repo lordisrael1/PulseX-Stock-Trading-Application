@@ -10,6 +10,8 @@ import {
   ArrowLeft
 } from 'lucide-react-native';
 import { useState } from 'react';
+import { useBankAccountStore } from '../../../../store/useBankAccountStore';
+import { useWalletStore } from '../../../../store/useWalletStore';
 import {
   ActivityIndicator,
   ScrollView,
@@ -31,10 +33,6 @@ interface BankAccount {
   last4: string;
 }
 
-interface Props {
-  amount?: number;
-  bank?: BankAccount;
-}
 
 // ─── Fee logic ────────────────────────────────────────────────────────────────
 
@@ -258,29 +256,41 @@ function fmtAmount(n: number) {
 
 // ─── Main screen ──────────────────────────────────────────────────────────────
 
-export default function ConfirmPaymentScreen({
-  //amount = 10000,
-  bank = { name: 'Guaranty Trust Bank', abbr: 'GTB', color: '#E8521A', last4: '4412' },
-}: Props) {
+export default function ConfirmPaymentScreen() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const params = useLocalSearchParams<{ amount?: string }>();
+  const params = useLocalSearchParams<{ amount?: string; bankId?: string }>();
+  const accounts = useBankAccountStore((s) => s.accounts);
 
   const amount = Number.isFinite(Number(params.amount))
         ? Math.max(0, parseInt(params.amount ?? '', 10))
         : DEFAULT_AMOUNT;
+
+  const storedBank = accounts.find((a) => a.id === params.bankId);
+  const bank: BankAccount = storedBank
+    ? { name: storedBank.bankName, abbr: storedBank.bankShort, color: storedBank.bankColor, last4: storedBank.accountNumber.slice(-4) }
+    : { name: 'Guaranty Trust Bank', abbr: 'GTB', color: '#E86000', last4: '6789' };
 
   const fee = calcFee(amount);
   const total = amount + fee;
   const feeLabel = fee === 0 ? 'Free' : `₦${fmt(fee)}`;
   const freeFlag = fee === 0;
 
+  const depositNGN = useWalletStore((s) => s.depositNGN);
+
   const handlePay = () => {
     setLoading(true);
-    // Simulate network call
     setTimeout(() => {
+      depositNGN(amount);
       setLoading(false);
-      router.replace('/payment/deposit/success' as any);
+      router.replace({
+        pathname: '/payment/deposit/success' as any,
+        params: {
+          amount: String(amount),
+          bankName: bank.name,
+          last4: bank.last4,
+        },
+      });
     }, 1800);
   };
 

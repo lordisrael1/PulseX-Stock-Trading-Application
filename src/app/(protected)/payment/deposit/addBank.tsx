@@ -30,6 +30,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowLeft, CheckCircle, ChevronDown, Search, X } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useBankAccountStore, type SavedBankAccount } from '../../../../store/useBankAccountStore';
 import {
   ActivityIndicator,
   Animated,
@@ -335,10 +336,27 @@ export default function WithdrawBankSelectScreen() {
     setAcctNum(raw);
   };
 
+  const addAccount = useBankAccountStore((s) => s.addAccount);
+
   const canContinue =
     verifyState === 'verified' &&
     resolvedName !== null &&
     bank !== null;
+
+  const handleSaveAndContinue = () => {
+    if (!bank || !resolvedName) return;
+    const newAccount: SavedBankAccount = {
+      id: `${bank.code}-${acctNum}`,
+      bankName: bank.name,
+      bankCode: bank.code,
+      bankColor: bank.color,
+      bankShort: bank.short,
+      accountNumber: acctNum,
+      accountName: resolvedName,
+    };
+    addAccount(newAccount);
+    router.back();
+  };
 
   return (
     <SafeAreaView style={styles.root}>
@@ -528,9 +546,7 @@ export default function WithdrawBankSelectScreen() {
                 ]}
                 disabled={!canContinue || nameMatches === false}
                 activeOpacity={0.85}
-                onPress={() =>
-                  router.back()
-                }
+                onPress={handleSaveAndContinue}
               >
                 <Text style={[
                   styles.ctaTxt,
