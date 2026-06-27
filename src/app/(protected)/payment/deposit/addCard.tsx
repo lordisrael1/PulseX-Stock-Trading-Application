@@ -20,6 +20,7 @@
 import { useRouter } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
+import { useCardStore } from '../../../../store/useCardStore';
 import {
     KeyboardAvoidingView,
     Platform,
@@ -232,7 +233,7 @@ function DefaultLogo({ width = 38, height = 24 }: { width?: number; height?: num
   );
 }
 
-function CardNetworkLogo({ network, width = 38, height = 24 }: {
+export function CardNetworkLogo({ network, width = 38, height = 24 }: {
   network: CardNetwork;
   width?: number;
   height?: number;
@@ -331,10 +332,25 @@ function formatExpiry(raw: string): string {
   return `${digits.slice(0, 2)} / ${digits.slice(2)}`;
 }
 
+function isExpiryValid(formatted: string): boolean {
+  const digits = formatted.replace(/\D/g, '');
+  if (digits.length !== 4) return false;
+  const mm = parseInt(digits.slice(0, 2), 10);
+  const yy = parseInt(digits.slice(2), 10);
+  if (mm < 1 || mm > 12) return false;
+  const now = new Date();
+  const currentYY = now.getFullYear() % 100;
+  const currentMM = now.getMonth() + 1;
+  if (yy < currentYY) return false;
+  if (yy === currentYY && mm < currentMM) return false;
+  return true;
+}
+
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 
 export default function AddCardScreen() {
   const router = useRouter();
+  const addCard = useCardStore((s) => s.addCard);
 
   const [cardNumber, setCardNumber] = useState('');
   const [expiry, setExpiry]         = useState('');
@@ -362,12 +378,29 @@ export default function AddCardScreen() {
     setCvv(text.replace(/\D/g, '').slice(0, maxCvv));
   }, [maxCvv]);
 
-  const rawDigits  = cardNumber.replace(/\D/g, '');
-  const canSubmit  =
+  const rawDigits    = cardNumber.replace(/\D/g, '');
+  const expiryValid  = isExpiryValid(expiry);
+  const canSubmit    =
     rawDigits.length === maxDigits &&
-    expiry.replace(/\D/g, '').length === 4 &&
+    expiryValid &&
     cvv.length === maxCvv &&
     holderName.trim().length >= 2;
+
+  const expiryDigits = expiry.replace(/\D/g, '');
+  const showExpiryError = expiryDigits.length === 4 && !expiryValid;
+
+  const handleSubmit = () => {
+    const last4 = rawDigits.slice(-4);
+    const expiryCompact = `${expiryDigits.slice(0, 2)}/${expiryDigits.slice(2)}`;
+    addCard({
+      id: `${network}-${last4}-${Date.now()}`,
+      network,
+      last4,
+      holderName: holderName.trim().toUpperCase(),
+      expiry: expiryCompact,
+    });
+    router.back();
+  };
 
   return (
     <SafeAreaView style={styles.root}>
@@ -433,7 +466,7 @@ export default function AddCardScreen() {
           <View style={styles.rowFields}>
             <View style={[styles.fieldWrap, { flex: 1 }]}>
               <Text style={styles.fieldLabel}>EXPIRY</Text>
-              <View style={styles.fieldBox}>
+              <View style={[styles.fieldBox, showExpiryError && styles.fieldBoxError]}>
                 <TextInput
                   style={[styles.fieldInput, { textAlign: 'center' }]}
                   placeholder="MM / YY"
@@ -445,6 +478,9 @@ export default function AddCardScreen() {
                   returnKeyType="next"
                 />
               </View>
+              {showExpiryError && (
+                <Text style={styles.expiryError}>Card expired or invalid date</Text>
+              )}
             </View>
 
             <View style={[styles.fieldWrap, { flex: 1 }]}>
@@ -504,7 +540,7 @@ export default function AddCardScreen() {
             style={[styles.cta, !canSubmit && styles.ctaDisabled]}
             disabled={!canSubmit}
             activeOpacity={0.85}
-            onPress={() => router.back()}
+            onPress={handleSubmit}
           >
             <Text style={[styles.ctaTxt, !canSubmit && styles.ctaTxtDisabled]}>
               Add card
@@ -667,6 +703,16 @@ const styles = StyleSheet.create({
   networkHint: {
     fontSize: 11,
     color: '#22C55E',
+    fontWeight: '600',
+    marginTop: 5,
+    marginLeft: 2,
+  },
+  fieldBoxError: {
+    borderColor: '#DC2626',
+  },
+  expiryError: {
+    fontSize: 11,
+    color: '#DC2626',
     fontWeight: '600',
     marginTop: 5,
     marginLeft: 2,

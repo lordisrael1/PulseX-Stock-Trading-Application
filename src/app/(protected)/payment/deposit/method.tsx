@@ -9,6 +9,8 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useBankAccountStore } from '../../../../store/useBankAccountStore';
+import { useCardStore } from '../../../../store/useCardStore';
+import { CardNetworkLogo } from './addCard';
 import {
     Clipboard,
     Platform,
@@ -35,10 +37,6 @@ function fmtAmount(n: number) {
 }
 
 
-const CARDS = [
-    { id: 'visa', brand: 'VISA', num: '•••• •••• •••• 4521', name: 'Joseph Israel', exp: '09/27', color: '#1A56A0' },
-    //{ id: 'mc', brand: 'MC', num: '•••• •••• •••• 8843', name: 'Joseph Israel', exp: '03/26', color: '#EB5D0E' },
-];
 
 function buildUssdCodes(amount: number) {
     return [
@@ -264,28 +262,28 @@ function BankSubScreen({ onContinue }: { onContinue: (bankId: string) => void })
 
 // ─── Card Sub-screen (113.png) ────────────────────────────────────────────────
 
-function CardSubScreen({ onContinue }: { onContinue: () => void }) {
+function CardSubScreen({ onContinue }: { onContinue: (cardId: string) => void }) {
     const router = useRouter();
-    const [sel, setSel] = useState(CARDS[0].id);
+    const cards = useCardStore((s) => s.cards);
+    const [sel, setSel] = useState(cards[0]?.id ?? '');
+    const selCard = cards.find(c => c.id === sel);
 
     return (
         <View style={styles.body}>
             <Text style={styles.sectionLbl}>SAVED CARDS</Text>
             <View style={styles.listCard}>
-                {CARDS.map(c => (
+                {cards.map(c => (
                     <TouchableOpacity
                         key={c.id}
                         style={styles.bankRow}
                         onPress={() => setSel(c.id)}
                         activeOpacity={0.7}
                     >
-                        <View style={[styles.cardChip, { backgroundColor: c.color }]}>
-                            <Text style={styles.cardBrand}>{c.brand}</Text>
-                        </View>
+                        <CardNetworkLogo network={c.network} width={50} height={32} />
                         <View style={styles.bankInfo}>
-                            <Text style={styles.bankName}>{c.num}</Text>
-                            <Text style={styles.bankAcct}>{c.name}</Text>
-                            <Text style={styles.bankAcct}>Exp {c.exp}</Text>
+                            <Text style={styles.bankName}>•••• •••• •••• {c.last4}</Text>
+                            <Text style={styles.bankAcct}>{c.holderName}</Text>
+                            <Text style={styles.bankAcct}>Exp {c.expiry}</Text>
                         </View>
                         <View style={[styles.radioOuter, sel === c.id && styles.radioOuterSel]}>
                             {sel === c.id && <View style={styles.radioInner} />}
@@ -306,8 +304,13 @@ function CardSubScreen({ onContinue }: { onContinue: () => void }) {
                 <Text style={styles.secTxt}>🔒  Card data encrypted · Never stored on our servers</Text>
             </View>
 
-            <TouchableOpacity style={styles.cta}  onPress={onContinue} activeOpacity={0.85}>
-                <Text style={styles.ctaTxt}>Pay with card</Text>
+            <TouchableOpacity
+                style={[styles.cta, !selCard && styles.ctaDisabled]}
+                onPress={() => selCard && onContinue(selCard.id)}
+                activeOpacity={0.85}
+                disabled={!selCard}
+            >
+                <Text style={[styles.ctaTxt, !selCard && styles.ctaDisabledTxt]}>Pay with card</Text>
             </TouchableOpacity>
         </View>
     );
@@ -464,7 +467,9 @@ export default function DepositMethodScreen() {
         }
     };
 
-    const goConfirmCard = () => router.push('/payment/deposit/confirmCard');
+    const goConfirmCard = (cardId: string) => {
+        router.push({ pathname: '/payment/deposit/confirmCard', params: { amount: String(amount), cardId } });
+    };
     const goConfirmBank = (bankId: string) => {
         router.push({ pathname: '/payment/deposit/confirm', params: { amount: String(amount), bankId } });
     };

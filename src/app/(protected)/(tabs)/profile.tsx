@@ -37,6 +37,7 @@ import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { storage } from '../../../lib/storage';
 import { logout } from '../../../store/slices/authSlice';
 import { clearBankAccountStorage } from '../../../store/useBankAccountStore';
+import { clearCardStorage } from '../../../store/useCardStore';
 import { clearWalletStorage } from '../../../store/useWalletStore';
 
 const { width } = Dimensions.get('window');
@@ -604,6 +605,7 @@ export default function ProfileScreen() {
       dispatch(logout());
       await storage.delete('accessToken');
       await clearBankAccountStorage();
+      await clearCardStorage();
       await clearWalletStorage();
       await new Promise(r => setTimeout(r, 600));
       setShowSignOut(false);

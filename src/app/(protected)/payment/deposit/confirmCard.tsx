@@ -18,38 +18,12 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Path, Rect } from 'react-native-svg';
+import { useCardStore } from '../../../../store/useCardStore';
+import { useWalletStore } from '../../../../store/useWalletStore';
+import { CardNetworkLogo } from './addCard';
 
 type CardNetwork = 'visa' | 'mastercard' | 'verve';
 
-function VisaBadge() {
-  return (
-    <View style={[styles.netBox, { backgroundColor: '#1A1F71' }]}>
-      <Text style={{ color: '#fff', fontSize: 9, fontWeight: '700', letterSpacing: 1 }}>VISA</Text>
-    </View>
-  );
-}
-
-function McBadge() {
-  return (
-    <View style={[styles.netBox, { backgroundColor: '#252525' }]}>
-      <Text style={{ color: '#F79E1B', fontSize: 9, fontWeight: '700' }}>MC</Text>
-    </View>
-  );
-}
-
-function VerveBadge() {
-  return (
-    <View style={[styles.netBox, { backgroundColor: '#006B3F' }]}>
-      <Text style={{ color: '#fff', fontSize: 8, fontWeight: '700' }}>VERVE</Text>
-    </View>
-  );
-}
-
-function NetworkBadge({ n }: { n: CardNetwork }) {
-  if (n === 'mastercard') return <McBadge />;
-  if (n === 'verve')      return <VerveBadge />;
-  return <VisaBadge />;
-}
 
 function CheckSvg() {
   return (
@@ -100,15 +74,20 @@ function DRow({ label, value, color, bold, last }: {
 export default function CardConfirmScreen() {
   const router = useRouter();
   const p = useLocalSearchParams<{
-    amount?: string; cardLast4?: string; cardNetwork?: string;
+    amount?: string; cardId?: string;
+    cardLast4?: string; cardNetwork?: string;
     cardHolder?: string; cardExpiry?: string;
   }>();
 
+  const cards = useCardStore((s) => s.cards);
+  const depositNGN = useWalletStore((s) => s.depositNGN);
+  const storedCard = cards.find((c) => c.id === p.cardId);
+
   const amount      = p.amount      ?? '10000';
-  const cardLast4   = p.cardLast4   ?? '4521';
-  const network     = (p.cardNetwork ?? 'visa') as CardNetwork;
-  const cardHolder  = p.cardHolder  ?? 'Joseph Israel';
-  const cardExpiry  = p.cardExpiry  ?? '09/27';
+  const cardLast4   = storedCard?.last4       ?? p.cardLast4   ?? '4521';
+  const network     = (storedCard?.network    ?? p.cardNetwork ?? 'visa') as CardNetwork;
+  const cardHolder  = storedCard?.holderName  ?? p.cardHolder  ?? 'Joseph Israel';
+  const cardExpiry  = storedCard?.expiry      ?? p.cardExpiry  ?? '09/27';
 
   const [loading, setLoading] = useState(false);
   const [err,     setErr]     = useState('');
@@ -146,11 +125,12 @@ export default function CardConfirmScreen() {
       // if (!res.ok) throw new Error((await res.json()).message);
       // ─────────────────────────────────────────────────────────────────
       await new Promise(r => setTimeout(r, 1400));
+      depositNGN(parseFloat(amount));
       const ref = `PX${Math.floor(Math.random() * 90_000_000 + 10_000_000)}`;
 
       router.replace({
         pathname: '/(protected)/payment/deposit/pending',
-        params: { amount, bank: `Visa •••• ${cardLast4}`, accountNo: '', accountName: cardHolder, ref, method: 'card' },
+        params: { amount, bank: `${network.toUpperCase()} •••• ${cardLast4}`, accountNo: '', accountName: cardHolder, ref, method: 'card' },
       } as any);
     } catch (e: any) {
       setErr(e?.message ?? 'Payment failed. Please try again.');
@@ -185,7 +165,7 @@ export default function CardConfirmScreen() {
         </View>
 
         <TouchableOpacity style={styles.cardRow} onPress={() => router.back()} activeOpacity={0.75} disabled={loading}>
-          <NetworkBadge n={network} />
+          <CardNetworkLogo network={network} width={50} height={32} />
           <View style={styles.cardInfo}>
             <Text style={styles.cardNum}>•••• •••• •••• {cardLast4}</Text>
             <Text style={styles.cardMeta}>{cardHolder} · Exp {cardExpiry}</Text>
