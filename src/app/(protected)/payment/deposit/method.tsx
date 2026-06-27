@@ -462,7 +462,7 @@ export default function DepositMethodScreen() {
         }
     };
 
-    const goConfirm = () => router.push('/payment/deposit/confirm');
+    const goConfirmCard = () => router.push('/payment/deposit/confirmCard');
     const goConfirmBank = () => router.push('/payment/deposit/confirm');
     const goConfirmNibss = () => router.push('/payment/deposit/confirmNibss')
 
@@ -475,7 +475,7 @@ export default function DepositMethodScreen() {
 
             {view === 'grid' && <MethodGrid onPick={setView} />}
             {view === 'bank' && <BankSubScreen onContinue={goConfirmBank} />}
-            {view === 'card' && <CardSubScreen onContinue={goConfirm} />}
+            {view === 'card' && <CardSubScreen onContinue={goConfirmCard} />}
             {view === 'ussd' && <USSDSubScreen onContinue={goConfirmNibss} amount={amount} />}
             {view === 'transfer' && <TransferSubScreen onContinue={goConfirmNibss} amountFmt={amountFmt} />}
         </SafeAreaView>
